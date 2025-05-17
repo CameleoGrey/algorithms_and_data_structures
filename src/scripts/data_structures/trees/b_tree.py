@@ -9,6 +9,38 @@ Each node contains multiple keys.
 All leaves are at the same depth.
 Nodes have a minimum and maximum number of keys (defined by the order t).
 
+Insertion Operation
+Process:
+Locate the correct leaf node where the new key should be inserted (using the search process).
+Insert the key into the leaf node in sorted order.
+Handle overflow:
+If the node exceeds the maximum number of keys, split the node into two.
+Promote the middle key to the parent node.
+If the parent overflows, split it as well, propagating upward.
+If the root splits, a new root is created, increasing the height of the tree.
+Example:
+Inserting key K:
+
+Find the leaf node.
+Insert K in sorted order.
+If the node has too many keys, split it:
+For example, if the node has 4 keys and the maximum is 3, split into two nodes with 2 keys each.
+Promote the middle key to the parent.
+
+Deletion Operation
+Process:
+Find the key to delete.
+If the key is in an internal node:
+Replace it with its in-order predecessor or successor (from a leaf).
+Delete the predecessor/successor from the leaf.
+If the key is in a leaf:
+Remove it directly.
+Handle underflow:
+If a node has fewer than the minimum number of keys, rebalance:
+Borrow a key from a sibling if possible.
+Or merge with a sibling and adjust the parent.
+Continue rebalancing upward if necessary.
+
 Summary
 The BTree class supports insertion, search, and traversal.
 The minimum degree t controls the range of keys per node.
@@ -63,15 +95,21 @@ class BTree:
         t = self.t
         node = parent.children[i]
         new_node = BTreeNode(t, leaf=node.leaf)
-        # Move second half of keys to new node
+        
+        # The key that will move up to the parent
+        median_key = node.keys[t - 1]
+        
+        # Move second half of keys to new node (excluding median)
         new_node.keys = node.keys[t:]
         node.keys = node.keys[:t - 1]
+        
         # Move children if not leaf
         if not node.leaf:
             new_node.children = node.children[t:]
             node.children = node.children[:t]
-        # Insert new node into parent
-        parent.keys.insert(i, node.keys.pop())
+        
+        # Insert median key into parent
+        parent.keys.insert(i, median_key)
         parent.children.insert(i + 1, new_node)
 
     def _insert_non_full(self, node, k):
@@ -106,19 +144,15 @@ class BTree:
         if not node.leaf:
             self.traverse(node.children[len(node.keys)])
 
-# Create a B-tree of minimum degree 3
+# Test the B-tree
 b_tree = BTree(t=3)
-
-# Insert some keys
 for key in [10, 20, 5, 6, 12, 30, 7, 17]:
     b_tree.insert(key)
 
-# Traverse the tree
 print("B-Tree traversal:")
 b_tree.traverse()
 print()
 
-# Search for a key
 search_key = 12
 result = b_tree.search(search_key)
 if result:
