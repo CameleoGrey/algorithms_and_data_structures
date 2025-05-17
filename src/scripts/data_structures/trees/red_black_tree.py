@@ -90,7 +90,6 @@ class RedBlackTree:
         self.NIL.color = "black"
         self.root = self.NIL
 
-    # Insertion
     def insert(self, data):
         new_node = Node(data)
         new_node.left = self.NIL
@@ -125,10 +124,10 @@ class RedBlackTree:
         self.fix_insert(new_node)
 
     def fix_insert(self, k):
-        while k.parent is not None and k.parent.color == "red":
+        while k.parent.color == "red":
             if k.parent == k.parent.parent.right:
                 u = k.parent.parent.left  # uncle
-                if u is not None and u.color == "red":
+                if u.color == "red":
                     u.color = "black"
                     k.parent.color = "black"
                     k.parent.parent.color = "red"
@@ -143,7 +142,7 @@ class RedBlackTree:
             else:
                 u = k.parent.parent.right  # uncle
 
-                if u is not None and u.color == "red":
+                if u.color == "red":
                     u.color = "black"
                     k.parent.color = "black"
                     k.parent.parent.color = "red"
@@ -161,7 +160,6 @@ class RedBlackTree:
 
         self.root.color = "black"
 
-    # Rotation
     def left_rotate(self, x):
         y = x.right
         x.right = y.left
@@ -196,7 +194,6 @@ class RedBlackTree:
         y.right = x
         x.parent = y
 
-    # Deletion
     def delete_node(self, data):
         self.delete_node_helper(self.root, data)
 
@@ -306,7 +303,6 @@ class RedBlackTree:
             node = node.left
         return node
 
-    # Search
     def search(self, data):
         return self.search_helper(self.root, data)
 
@@ -318,7 +314,6 @@ class RedBlackTree:
             return self.search_helper(node.left, data)
         return self.search_helper(node.right, data)
 
-    # Print the tree
     def print_tree(self):
         self.print_helper(self.root, "", True)
 
@@ -338,6 +333,7 @@ class RedBlackTree:
             self.print_helper(node.right, indent, True)
 
 
+# Test the corrected implementation
 tree = RedBlackTree()
 values = [10, 18, 7, 15, 16, 30, 25, 40, 60, 2, 1, 70]
 

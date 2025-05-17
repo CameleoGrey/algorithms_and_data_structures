@@ -36,38 +36,46 @@ class TwoThreeTree:
         if self.root is None:
             self.root = Node23([key])
             return
-        new_root, _ = self._insert(self.root, key)
-        if new_root:
-            self.root = new_root
+        
+        # Perform insertion
+        split_result = self._insert(self.root, key)
+        
+        # Handle root split if needed
+        if split_result:
+            left, right, promoted_key = split_result
+            self.root = Node23([promoted_key], [left, right])
 
     def _insert(self, node, key):
         if node.is_leaf():
             node.insert_key(key)
             if len(node.keys) > 2:
-                return self._split_node(node)
-            return None, None
-        # Internal node
-        # Decide which child to descend
+                middle, left, right = node.split()
+                return left, right, middle
+            return None
+        
+        # Internal node: find the correct child
         if key < node.keys[0]:
             index = 0
         elif len(node.keys) == 1 or key < node.keys[1]:
             index = 1
         else:
             index = 2
-        child = node.children[index]
-        new_child, promoted = self._insert(child, key)
-        if new_child:
+            
+        # Recursive insertion
+        split_result = self._insert(node.children[index], key)
+        
+        if split_result:
+            left, right, promoted_key = split_result
             # Insert promoted key into current node
-            node.keys.insert(index, promoted)
-            node.children[index] = new_child[0]
-            node.children.insert(index + 1, new_child[1])
+            node.keys.insert(index, promoted_key)
+            node.children[index] = left
+            node.children.insert(index + 1, right)
+            
             if len(node.keys) > 2:
-                return self._split_node(node)
-        return None, None
-
-    def _split_node(self, node):
-        middle_key, left_node, right_node = node.split()
-        return (left_node, right_node), middle_key
+                middle, new_left, new_right = node.split()
+                return new_left, new_right, middle
+                
+        return None
 
     def search(self, key):
         return self._search(self.root, key)
@@ -95,23 +103,17 @@ class TwoThreeTree:
                 result.extend(node.keys)
             else:
                 result.extend(_traverse(node.children[0]))
-                result.extend(node.keys)
+                result.extend(node.keys[:1])
                 result.extend(_traverse(node.children[1]))
-                if len(node.children) == 3:
+                if len(node.keys) > 1:
                     result.extend(_traverse(node.children[2]))
             return result
         return _traverse(self.root)
 
-# Usage example
+# Test the corrected implementation
 tree = TwoThreeTree()
-
-# Insert elements
 for num in [10, 20, 5, 15, 25, 30, 2]:
     tree.insert(num)
-
-# Search for elements
-print("Search 15:", tree.search(15))  # True
-print("Search 100:", tree.search(100))  # False
-
-# Traverse the tree
-print("Tree traversal:", tree.traverse())
+print("Tree traversal:", tree.traverse())  # Should print [2, 5, 10, 15, 20, 25, 30]
+print("Search 15:", tree.search(15))      # Should print True
+print("Search 100:", tree.search(100))    # Should print False
