@@ -5,7 +5,7 @@ A Red-Black Tree is a balanced binary search tree that ensures logarithmic perfo
 key operations by maintaining a specific structure and balancing through rotations and recoloring of nodes.
 
 Overview
-A Red-Black Tree is a type of self-balancing binary search tree. It's used to store data in a sorted manner while ensuring 
+A Red-Black Tree is a type of self-balancing binary search tree. It's used to store value in a sorted manner while ensuring 
 efficient operations like insertion, deletion, and searching. The "self-balancing" aspect means that the tree automatically 
 adjusts its structure to remain balanced, preventing performance degradation to O(n) in the worst-case scenario (which can occur in a regular binary search tree).
 Core Principles
@@ -51,18 +51,18 @@ In this case, complex rotation and recoloring operations are performed to rebala
 Advantages of Using Red-Black Trees
 Performance: Guaranteed logarithmic time complexity for basic operations.
 Efficiency: Well-suited for tasks where insertion, deletion, and search performance are important.
-Wide Application: Used in various data structures and algorithms, such as maps and sets in standard libraries of many programming languages.
+Wide Application: Used in various value structures and algorithms, such as maps and sets in standard libraries of many programming languages.
 
 Explanation
-Node Class: Represents each node with data, parent, left, right children, and color.
+Node Class: Represents each node with value, parent, left, right children, and color.
 RedBlackTree Class:
-insert(data): Inserts a new node and calls fix_insert to maintain the Red-Black Tree properties.
+insert(value): Inserts a new node and calls fix_insert to maintain the Red-Black Tree properties.
 fix_insert(node): Restructures the tree after insertion by performing rotations and recoloring.
 left_rotate(node): Performs a left rotation.
 right_rotate(node): Performs a right rotation.
-delete_node(data): Deletes a node from the tree.
+delete_node(value): Deletes a node from the tree.
 fix_delete(node): Fixes the tree after deletion to maintain Red-Black Tree properties.
-search(data): Searches for a node with the given data.
+search(value): Searches for a node with the given value.
 print_tree(): Prints the tree structure.
 
 
@@ -77,8 +77,8 @@ This implementation provides a basic Red-Black Tree with insertion, deletion, se
 
 
 class Node:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, value):
+        self.value = value
         self.parent = None
         self.left = None
         self.right = None
@@ -90,8 +90,8 @@ class RedBlackTree:
         self.NIL.color = "black"
         self.root = self.NIL
 
-    def insert(self, data):
-        new_node = Node(data)
+    def insert(self, value):
+        new_node = Node(value)
         new_node.left = self.NIL
         new_node.right = self.NIL
 
@@ -100,7 +100,7 @@ class RedBlackTree:
 
         while x != self.NIL:
             y = x
-            if new_node.data < x.data:
+            if new_node.value < x.value:
                 x = x.left
             else:
                 x = x.right
@@ -109,7 +109,7 @@ class RedBlackTree:
 
         if y is None:
             self.root = new_node
-        elif new_node.data < y.data:
+        elif new_node.value < y.value:
             y.left = new_node
         else:
             y.right = new_node
@@ -194,16 +194,16 @@ class RedBlackTree:
         y.right = x
         x.parent = y
 
-    def delete_node(self, data):
-        self.delete_node_helper(self.root, data)
+    def delete_node(self, value):
+        self.delete_node_helper(self.root, value)
 
     def delete_node_helper(self, node, key):
         z = self.NIL
         while node != self.NIL:
-            if node.data == key:
+            if node.value == key:
                 z = node
 
-            if node.data <= key:
+            if node.value <= key:
                 node = node.right
             else:
                 node = node.left
@@ -303,16 +303,16 @@ class RedBlackTree:
             node = node.left
         return node
 
-    def search(self, data):
-        return self.search_helper(self.root, data)
+    def search(self, value):
+        return self.search_helper(self.root, value)
 
-    def search_helper(self, node, data):
-        if node == self.NIL or data == node.data:
+    def search_helper(self, node, value):
+        if node == self.NIL or value == node.value:
             return node
 
-        if data < node.data:
-            return self.search_helper(node.left, data)
-        return self.search_helper(node.right, data)
+        if value < node.value:
+            return self.search_helper(node.left, value)
+        return self.search_helper(node.right, value)
 
     def print_tree(self):
         self.print_helper(self.root, "", True)
@@ -328,7 +328,7 @@ class RedBlackTree:
                 indent += "|    "
 
             s_color = "RED" if node.color == "red" else "BLACK"
-            print(str(node.data) + "(" + s_color + ")")
+            print(str(node.value) + "(" + s_color + ")")
             self.print_helper(node.left, indent, False)
             self.print_helper(node.right, indent, True)
 

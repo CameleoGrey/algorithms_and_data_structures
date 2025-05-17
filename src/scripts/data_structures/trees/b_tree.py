@@ -350,8 +350,10 @@ class BTree:
         return True
 
 # Test the B-tree
-b_tree = BTree(t=100)
-for key in [100000 - i for i in range(100000)]:
+b_tree = BTree(t=3)
+for key in [i for i in range(100)]:
+    b_tree.insert(key)
+for key in [10000, 200000]:
     b_tree.insert(key)
 
 print("B-Tree traversal:")
