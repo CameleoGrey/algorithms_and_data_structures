@@ -1,3 +1,6 @@
+
+
+
 def brute_force_search(text, pattern):
     """
 

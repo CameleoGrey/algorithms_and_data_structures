@@ -1,3 +1,6 @@
+
+
+
 def boyer_moore_search(text, pattern):
     """
     Perform Boyer-Moore substring search using the bad character heuristic.

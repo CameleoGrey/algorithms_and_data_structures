@@ -17,31 +17,57 @@ def build_suffix_array(s):
     sa = [idx for (suf, idx) in suffixes]
     return sa
 
-def build_suffix_array_efficient(s):
+def build_suffix_array_efficient(input_string):
     """
-    Build suffix array for string s using prefix doubling algorithm.
+    Builds a suffix array for the given string using the prefix doubling algorithm.
+    
+    Args:
+        input_string: The string for which to build the suffix array
+        
+    Returns:
+        A list representing the suffix array of the input string
     """
-    n = len(s)
-    k = 1
-    rank = [ord(c) for c in s]
-    sa = list(range(n))
-    temp = [0] * n
+    length = len(input_string)
+    prefix_length = 1  # Current comparison prefix length (doubles each iteration)
+    
+    # Initial ranks based on single characters
+    ranks = [ord(char) for char in input_string]
+    suffix_array = list(range(length))
+    new_ranks = [0] * length
 
     while True:
-        # Key for sorting: (rank[i], rank[i + k]) if i + k < n else -1
-        sa.sort(key=lambda x: (rank[x], rank[x + k] if x + k < n else -1))
-        temp[sa[0]] = 0
-        for i in range(1, n):
-            prev, curr = sa[i - 1], sa[i]
-            temp[curr] = temp[prev]
-            if (rank[prev], rank[prev + k] if prev + k < n else -1) != \
-               (rank[curr], rank[curr + k] if curr + k < n else -1):
-                temp[curr] += 1
-        rank = temp[:]
-        if rank[sa[-1]] == n - 1:
+        # Sort suffixes based on current rank pairs
+        suffix_array.sort(key=lambda i: (
+            ranks[i], 
+            ranks[i + prefix_length] if i + prefix_length < length else -1
+        ))
+        
+        # Assign new ranks based on the sorted order
+        new_ranks[suffix_array[0]] = 0
+        for i in range(1, length):
+            prev_suffix, curr_suffix = suffix_array[i - 1], suffix_array[i]
+            
+            # Give the same rank to suffixes with identical comparison values
+            new_ranks[curr_suffix] = new_ranks[prev_suffix]
+            
+            # Only increment rank if the current suffix is different from previous
+            prev_key = (ranks[prev_suffix], 
+                       ranks[prev_suffix + prefix_length] if prev_suffix + prefix_length < length else -1)
+            curr_key = (ranks[curr_suffix],
+                       ranks[curr_suffix + prefix_length] if curr_suffix + prefix_length < length else -1)
+            
+            if prev_key != curr_key:
+                new_ranks[curr_suffix] += 1
+        
+        ranks = new_ranks[:]  # Update ranks for next iteration
+        
+        # If all suffixes have unique ranks, we're done
+        if ranks[suffix_array[-1]] == length - 1:
             break
-        k <<= 1
-    return sa
+            
+        prefix_length *= 2  # Double the comparison prefix length
+    
+    return suffix_array
 
 
 # Example string
